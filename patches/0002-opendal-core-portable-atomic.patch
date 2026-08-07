@@ -1,0 +1,11 @@
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/opendal-core-0.57.0/src/raw/atomic_util.rs
++++ /home/user/github/vaultwarden/vendor/opendal-core/src/raw/atomic_util.rs
+@@ -15,7 +15,7 @@
+ // specific language governing permissions and limitations
+ // under the License.
+ 
+-use std::sync::atomic::AtomicU64;
++use portable_atomic::AtomicU64;
+ use std::sync::atomic::Ordering;
+ 
+ /// AtomicContentLength is a wrapper of AtomicU64 that used to store content length.

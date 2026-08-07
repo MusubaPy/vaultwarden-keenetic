@@ -1,0 +1,4 @@
+build/
+config/key.pem
+*.log
+*.pid

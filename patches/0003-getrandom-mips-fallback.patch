@@ -1,0 +1,63 @@
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.4.3/src/backends.rs
++++ /home/user/github/vaultwarden/vendor/getrandom/src/backends.rs
+@@ -82,6 +82,10 @@
+             any(
+                 target_arch = "aarch64",
+                 target_arch = "arm",
++                target_arch = "mips",
++                target_arch = "mips32r6",
++                target_arch = "mips64",
++                target_arch = "mips64r6",
+                 target_arch = "powerpc",
+                 target_arch = "powerpc64",
+                 target_arch = "s390x",
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.4.3/src/backends/linux_android_with_fallback.rs
++++ /home/user/github/vaultwarden/vendor/getrandom/src/backends/linux_android_with_fallback.rs
+@@ -19,45 +19,8 @@
+ #[cold]
+ #[inline(never)]
+ fn init() -> NonNull<c_void> {
+-    // Use static linking to `libc::getrandom` on MUSL targets and `dlsym` everywhere else
+-    #[cfg(not(target_env = "musl"))]
+-    let raw_ptr = unsafe { libc::dlsym(libc::RTLD_DEFAULT, c"getrandom".as_ptr()) };
+-    #[cfg(target_env = "musl")]
+-    let raw_ptr = {
+-        let fptr: GetRandomFn = libc::getrandom;
+-        unsafe { transmute::<GetRandomFn, *mut c_void>(fptr) }
+-    };
+-
+-    let res_ptr = match NonNull::new(raw_ptr) {
+-        Some(fptr) => {
+-            let getrandom_fn = unsafe { transmute::<*mut c_void, GetRandomFn>(fptr.as_ptr()) };
+-            // Check that `getrandom` syscall is supported by kernel
+-            let res = unsafe { getrandom_fn(ptr::dangling_mut(), 0, 0) };
+-            if cfg!(getrandom_test_linux_fallback) {
+-                NOT_AVAILABLE
+-            } else if res.is_negative() {
+-                match utils::get_errno() {
+-                    libc::ENOSYS => NOT_AVAILABLE, // No kernel support
+-                    // The fallback on EPERM is intentionally not done on Android since this workaround
+-                    // seems to be needed only for specific Linux-based products that aren't based
+-                    // on Android. See https://github.com/rust-random/getrandom/issues/229.
+-                    #[cfg(target_os = "linux")]
+-                    libc::EPERM => NOT_AVAILABLE, // Blocked by seccomp
+-                    _ => fptr,
+-                }
+-            } else {
+-                fptr
+-            }
+-        }
+-        None => NOT_AVAILABLE,
+-    };
+-
+-    #[cfg(getrandom_test_linux_without_fallback)]
+-    if res_ptr == NOT_AVAILABLE {
+-        panic!("Fallback is triggered with enabled `getrandom_test_linux_without_fallback`")
+-    }
+-
+-    res_ptr
++    // Force /dev/urandom fallback on MIPS32 where getrandom() syscall returns ENOSYS
++    NOT_AVAILABLE
+ }
+ 
+ // Prevent inlining of the fallback implementation

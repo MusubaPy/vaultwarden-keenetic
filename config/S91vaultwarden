@@ -1,0 +1,88 @@
+#!/bin/sh
+# ──────────────────────────────────────────────────────────────
+# S91vaultwarden — Entware init script for Vaultwarden
+# ──────────────────────────────────────────────────────────────
+
+NAME=vaultwarden
+DAEMON=/opt/bin/vaultwarden
+PIDFILE=/opt/var/run/vaultwarden.pid
+LOGFILE=/opt/var/log/vaultwarden.log
+DATA_DIR=/opt/var/vaultwarden
+
+# ── Environment ──────────────────────────────────────────────
+export SSL_CERT_FILE=/opt/etc/ssl/certs/ca-certificates.crt
+
+# Network
+export ROCKET_PORT=8080
+export ROCKET_ADDRESS=0.0.0.0
+export ROCKET_TLS={certs="/opt/etc/vaultwarden/cert.pem",key="/opt/etc/vaultwarden/key.pem"}
+
+# Paths
+export DATA_FOLDER=/opt/var/vaultwarden
+export WEB_VAULT_FOLDER=/opt/share/vaultwarden/web-vault
+
+# Security — change this after first login!
+# Generate a hash: /opt/bin/vaultwarden hash
+export ADMIN_TOKEN=CHANGEME
+export DOMAIN=https://192.168.1.1:8080
+
+# Features
+export SIGNUPS_ALLOWED=true
+export WEBSOCKET_ENABLED=true
+export ICON_SERVICE=internal
+
+# Logging (warn = minimal for 256MB RAM)
+export LOG_LEVEL=warn
+export EXTENDED_LOGGING=false
+
+# ── Service commands ─────────────────────────────────────────
+start() {
+    mkdir -p "$DATA_DIR" /opt/var/log /opt/var/run
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "$NAME is already running (PID: $(cat "$PIDFILE"))"
+        return 1
+    fi
+    echo "Starting $NAME..."
+    cd "$DATA_DIR"
+    $DAEMON >> "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    sleep 1
+    if kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "Started (PID: $(cat "$PIDFILE"))"
+    else
+        echo "FAILED — check $LOGFILE"
+        rm -f "$PIDFILE"
+        return 1
+    fi
+}
+
+stop() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "Stopping $NAME..."
+        kill $(cat "$PIDFILE") 2>/dev/null
+        sleep 1
+        kill -9 $(cat "$PIDFILE") 2>/dev/null
+        rm -f "$PIDFILE"
+        echo "Stopped"
+    else
+        echo "$NAME is not running"
+        rm -f "$PIDFILE" 2>/dev/null
+    fi
+}
+
+status() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "$NAME is running (PID: $(cat "$PIDFILE"))"
+    else
+        echo "$NAME is not running"
+        rm -f "$PIDFILE" 2>/dev/null
+    fi
+}
+
+case "$1" in
+    start)   start ;;
+    stop)    stop ;;
+    restart) stop; sleep 2; start ;;
+    status)  status ;;
+    *)       echo "Usage: $0 {start|stop|restart|status}"; exit 1 ;;
+esac

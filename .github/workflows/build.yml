@@ -1,0 +1,58 @@
+name: Build Vaultwarden for MIPS32r2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  VAULTWARDEN_VERSION: "1.37.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust nightly
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          rustup toolchain install nightly
+          rustup +nightly component add rust-src
+
+      - name: Cache toolchain
+        id: cache-tc
+        uses: actions/cache@v4
+        with:
+          path: ~/entware-sdk
+          key: mips32-glibc-bootlin-v2
+
+      - name: Download MIPS32 toolchain
+        if: steps.cache-tc.outputs.cache-hit != 'true'
+        run: |
+          wget -q "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32/tarballs/mips32--glibc--stable-2024.05-1.tar.xz" -O tc.tar.xz
+          mkdir -p $HOME/entware-sdk/staging_dir
+          tar xJf tc.tar.xz -C $HOME/entware-sdk/staging_dir
+          TC_DIR="mips32--glibc--stable-2024.05-1"
+          ln -s "$TC_DIR" $HOME/entware-sdk/staging_dir/toolchain-mips_mips32r2_gcc-8.4.0_glibc-2.27
+          cd $HOME/entware-sdk/staging_dir/$TC_DIR/bin
+          ln -sf mips-buildroot-linux-gnu-gcc mips-openwrt-linux-gnu-gcc
+          ln -sf mips-buildroot-linux-gnu-gcc.br_real mips-openwrt-linux-gnu-gcc.br_real
+          ln -sf mips-linux-ar                mips-openwrt-linux-gnu-ar
+
+      - name: Clone Vaultwarden
+        run: |
+          git clone --depth 1 --branch "$VAULTWARDEN_VERSION" \
+            https://github.com/dani-garcia/vaultwarden.git ~/vaultwarden
+
+      - name: Build
+        run: |
+          export ENTWARE_SDK=$HOME/entware-sdk
+          export VAULTWARDEN_SRC=$HOME/vaultwarden
+          ./scripts/build.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vaultwarden-mips32r2
+          path: build/vaultwarden

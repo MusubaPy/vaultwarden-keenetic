@@ -1,0 +1,363 @@
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/expiring.rs /home/user/github/vaultwarden/vendor/cached/src/stores/expiring.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/expiring.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/expiring.rs
+@@ -2,7 +2,8 @@
+ use crate::{CachedIter, CachedPeek, CloneCached};
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "async_core")]
+ use {super::CachedAsync, std::collections::hash_map::Entry, std::future::Future};
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/expiring_lru.rs /home/user/github/vaultwarden/vendor/cached/src/stores/expiring_lru.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/expiring_lru.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/expiring_lru.rs
+@@ -2,7 +2,8 @@
+ use crate::{CachedIter, CachedPeek, CloneCached};
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "async_core")]
+ use {super::CachedAsync, std::future::Future};
+@@ -541,7 +542,8 @@
+ mod tests {
+     use super::*;
+     use crate::Cached;
+-    use std::sync::atomic::{AtomicU64, Ordering};
++    use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+     type ExpiredU8 = u8;
+ 
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/lru.rs /home/user/github/vaultwarden/vendor/cached/src/stores/lru.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/lru.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/lru.rs
+@@ -17,7 +17,8 @@
+ use {super::CachedAsync, std::future::Future};
+ 
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ /// Least Recently Used / `Sized` Cache
+ ///
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/lru_ttl.rs /home/user/github/vaultwarden/vendor/cached/src/stores/lru_ttl.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/lru_ttl.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/lru_ttl.rs
+@@ -11,7 +11,8 @@
+ use super::{CacheEvict, Cached, LruCache, TimedEntry};
+ use std::marker::PhantomData;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ /// Timed LRU Cache
+ ///
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/mod.rs /home/user/github/vaultwarden/vendor/cached/src/stores/mod.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/mod.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/mod.rs
+@@ -3,7 +3,8 @@
+ use std::collections::HashMap;
+ use std::collections::hash_map::Entry;
+ use std::hash::Hash;
+-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{AtomicUsize, Ordering};
+ 
+ const STRIPE_COUNT: usize = 16;
+ 
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/expiring.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/expiring.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/expiring.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/expiring.rs
+@@ -1,6 +1,7 @@
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "ahash")]
+ use ahash::RandomState;
+@@ -658,7 +659,8 @@
+     #[test]
+     fn cache_remove_fires_on_evict_and_updates_metrics() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering as AtomicOrd};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrd};
+ 
+         let evict_count = Arc::new(AtomicU64::new(0));
+         let ec = evict_count.clone();
+@@ -757,7 +759,8 @@
+     #[test]
+     fn cache_clear_with_on_evict_fires_for_all_entries() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringCacheBase::<u32, Val>::builder()
+@@ -805,7 +808,8 @@
+     #[test]
+     fn clear_does_not_fire_on_evict() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringCacheBase::<u32, Val>::builder()
+@@ -922,7 +926,8 @@
+     #[test]
+     fn cache_remove_entry_fires_on_evict_for_expired() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringCacheBase::<u32, Val>::builder()
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/expiring_lru.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/expiring_lru.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/expiring_lru.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/expiring_lru.rs
+@@ -1,6 +1,7 @@
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "async_core")]
+ use crate::ConcurrentCachedAsync;
+@@ -838,7 +839,8 @@
+     #[test]
+     fn cache_remove_fires_on_evict_and_updates_metrics() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering as AtomicOrd};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrd};
+ 
+         let evict_count = Arc::new(AtomicU64::new(0));
+         let ec = evict_count.clone();
+@@ -925,7 +927,8 @@
+     #[test]
+     fn cache_clear_with_on_evict_fires_for_all_entries() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering as AtomicOrd};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrd};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringLruCacheBase::<u32, Val>::builder()
+@@ -975,7 +978,8 @@
+     #[test]
+     fn clear_does_not_fire_on_evict() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering as AtomicOrd};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrd};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringLruCacheBase::<u32, Val>::builder()
+@@ -1102,7 +1106,8 @@
+     #[test]
+     fn cache_remove_entry_fires_on_evict_for_expired() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering as AtomicOrd};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrd};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedExpiringLruCacheBase::<u32, Val>::builder()
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/lru.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/lru.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/lru.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/lru.rs
+@@ -1,6 +1,7 @@
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "async_core")]
+ use crate::ConcurrentCachedAsync;
+@@ -794,7 +795,8 @@
+ 
+     #[test]
+     fn cache_clear_with_on_evict_fires_for_all_entries() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruCacheBase::<u32, u32>::builder()
+@@ -835,7 +837,8 @@
+ 
+     #[test]
+     fn clear_does_not_fire_on_evict() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruCacheBase::<u32, u32>::builder()
+@@ -882,7 +885,8 @@
+ 
+     #[test]
+     fn cache_remove_entry_fires_on_evict() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruCacheBase::<u32, u32>::builder()
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/lru_ttl.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/lru_ttl.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/lru_ttl.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/lru_ttl.rs
+@@ -1,7 +1,8 @@
+ use std::hash::Hash;
+ use std::marker::PhantomData;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{AtomicBool, Ordering};
+ 
+ #[cfg(feature = "async_core")]
+ use crate::ConcurrentCachedAsync;
+@@ -1365,7 +1366,8 @@
+ 
+     #[test]
+     fn cache_clear_with_on_evict_fires_for_all_entries() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruTtlCacheBase::<u32, u32>::builder()
+@@ -1407,7 +1409,8 @@
+ 
+     #[test]
+     fn clear_does_not_fire_on_evict() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruTtlCacheBase::<u32, u32>::builder()
+@@ -1497,7 +1500,8 @@
+ 
+     #[test]
+     fn cache_remove_entry_fires_on_evict_for_expired() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedLruTtlCacheBase::<u32, u32>::builder()
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/mod.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/mod.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/mod.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/mod.rs
+@@ -1,4 +1,4 @@
+-use std::sync::atomic::AtomicU64;
++use portable_atomic::AtomicU64;
+ 
+ use crate::stores::BuildError;
+ 
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/ttl.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/ttl.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/ttl.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/ttl.rs
+@@ -1,6 +1,7 @@
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{AtomicBool, Ordering};
+ 
+ #[cfg(feature = "ahash")]
+ use ahash::RandomState;
+@@ -963,7 +964,8 @@
+ 
+     #[test]
+     fn cache_clear_with_on_evict_fires_for_all_entries() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedTtlCacheBase::<u32, u32>::builder()
+@@ -1003,7 +1005,8 @@
+ 
+     #[test]
+     fn clear_does_not_fire_on_evict() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedTtlCacheBase::<u32, u32>::builder()
+@@ -1089,7 +1092,8 @@
+ 
+     #[test]
+     fn cache_remove_entry_fires_on_evict_for_expired() {
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+         let count = Arc::new(AtomicU64::new(0));
+         let count2 = count.clone();
+         let c = ShardedTtlCacheBase::<u32, u32>::builder()
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/unbound.rs /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/unbound.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/sharded/unbound.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/sharded/unbound.rs
+@@ -1,6 +1,7 @@
+ use std::hash::Hash;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ #[cfg(feature = "ahash")]
+ use ahash::RandomState;
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/ttl.rs /home/user/github/vaultwarden/vendor/cached/src/stores/ttl.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/ttl.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/ttl.rs
+@@ -18,7 +18,8 @@
+ 
+ use super::{CacheEvict, Cached, TimedEntry};
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+ /// Cache store bound by time
+ ///
+diff -r /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/ttl_sorted.rs /home/user/github/vaultwarden/vendor/cached/src/stores/ttl_sorted.rs
+--- /home/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cached-2.0.2/src/stores/ttl_sorted.rs
++++ /home/user/github/vaultwarden/vendor/cached/src/stores/ttl_sorted.rs
+@@ -9,7 +9,8 @@
+ use std::hash::{Hash, Hasher};
+ use std::ops::Bound::{Excluded, Included};
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
++use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering as AtomicOrdering};
+ #[cfg(feature = "async_core")]
+ use {super::CachedAsync, std::future::Future};
+ 
+@@ -1471,7 +1472,8 @@
+     #[test]
+     fn cache_reset_preserves_configuration() {
+         use std::sync::Arc;
+-        use std::sync::atomic::{AtomicU64, Ordering};
++        use portable_atomic::AtomicU64;
++use std::sync::atomic::{Ordering};
+ 
+         let evicted = Arc::new(AtomicU64::new(0));
+         let evicted_clone = evicted.clone();
