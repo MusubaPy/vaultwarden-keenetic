@@ -42,13 +42,13 @@ jobs:
 
       - name: Clone Vaultwarden
         run: |
+          mkdir -p build
           git clone --depth 1 --branch "$VAULTWARDEN_VERSION" \
-            https://github.com/dani-garcia/vaultwarden.git ~/vaultwarden
+            https://github.com/dani-garcia/vaultwarden.git build/source
 
       - name: Build
         run: |
           export ENTWARE_SDK=$HOME/entware-sdk
-          export VAULTWARDEN_SRC=$HOME/vaultwarden
           ./scripts/build.sh
 
       - name: Upload artifact
